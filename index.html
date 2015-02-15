@@ -1842,28 +1842,30 @@ Elm.Main.make = function (_elm) {
       $Time.fps(25));
       return A2($Signal.sampleOn,
       delta,
-      A4($Signal.map3,
-      F3(function (v0,v1,v2) {
-         return {ctor: "_Tuple3"
+      A5($Signal.map4,
+      F4(function (v0,v1,v2,v3) {
+         return {ctor: "_Tuple4"
                 ,_0: v0
                 ,_1: v1
-                ,_2: v2};
+                ,_2: v2
+                ,_3: v3};
       }),
       delta,
       $Keyboard.arrows,
-      $Touch.touches));
+      $Touch.touches,
+      $Window.dimensions));
    }();
    var zap2 = F2(function (m,_v0) {
       return function () {
          switch (_v0.ctor)
          {case "_Tuple2":
             return _U.cmp(_v0._0,
-              80) > 0 && _U.cmp(_v0._0,
-              120) < 0 ? _U.replace([["zapped"
-                                     ,true]],
+              -20) > 0 && _U.cmp(_v0._0,
+              20) < 0 ? _U.replace([["zapped"
+                                    ,true]],
               m) : m;}
          _U.badCase($moduleName,
-         "on line 29, column 16 to 69");
+         "on line 29, column 16 to 71");
       }();
    });
    var zap = F2(function (touch,
@@ -1929,24 +1931,27 @@ Elm.Main.make = function (_elm) {
    var step = function (_v8) {
       return function () {
          switch (_v8.ctor)
-         {case "_Tuple3":
-            return function () {
-                 var touch = $List.isEmpty(_v8._2) ? $Maybe.Nothing : $Maybe.Just({ctor: "_Tuple2"
-                                                                                  ,_0: $List.head(_v8._2).x
-                                                                                  ,_1: $List.head(_v8._2).y});
-                 return function ($) {
-                    return zap(touch)(scroll(_v8._0)(physics(_v8._0)(walk(_v8._1)(gravity(_v8._0)(jump(_v8._1)($))))));
-                 };
-              }();}
+         {case "_Tuple4":
+            switch (_v8._3.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var touch = $List.isEmpty(_v8._2) ? $Maybe.Nothing : $Maybe.Just({ctor: "_Tuple2"
+                                                                                       ,_0: $List.head(_v8._2).x - $Basics.round($Basics.toFloat(_v8._3._0) / 2)
+                                                                                       ,_1: $List.head(_v8._2).y - $Basics.round($Basics.toFloat(_v8._3._1) / 2)});
+                      return function ($) {
+                         return zap(touch)(scroll(_v8._0)(physics(_v8._0)(walk(_v8._1)(gravity(_v8._0)(jump(_v8._1)($))))));
+                      };
+                   }();}
+              break;}
          _U.badCase($moduleName,
          "between lines 32 and 35");
       }();
    };
    var spriteSize = 70;
-   var render = F2(function (_v13,
+   var render = F2(function (_v16,
    world) {
       return function () {
-         switch (_v13.ctor)
+         switch (_v16.ctor)
          {case "_Tuple2":
             return function () {
                  var src = "media/Injection.png";
@@ -1954,13 +1959,13 @@ Elm.Main.make = function (_elm) {
                  0) > 0 ? "jump" : !_U.eq(world.vx,
                  0) ? "walk" : "stand";
                  var $ = {ctor: "_Tuple2"
-                         ,_0: $Basics.toFloat(_v13._0)
-                         ,_1: $Basics.toFloat(_v13._1)},
+                         ,_0: $Basics.toFloat(_v16._0)
+                         ,_1: $Basics.toFloat(_v16._1)},
                  w = $._0,
                  h = $._1;
                  return A3($Graphics$Collage.collage,
-                 _v13._0,
-                 _v13._1,
+                 _v16._0,
+                 _v16._1,
                  _L.fromArray([$Graphics$Collage.filled(A3($Color.rgb,
                               174,
                               238,
