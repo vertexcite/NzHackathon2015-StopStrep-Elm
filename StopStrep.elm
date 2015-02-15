@@ -17,7 +17,7 @@ world = { x=0, y=0, vx=0, vy=0, dir="right", strepY=strepStartY }
 
 -- UPDATE -- ("m" is for World)
 jump {y} m = if y > 0 && m.y == 0 then { m | vy <- 5 } else m
-gravity t m = if m.y > 0 then { m | vy <- m.vy - t/4 } else m
+gravity t m = if m.y > 0 then { m | vy <- m.vy - t/16 } else m
 physics t m = { m | x <- m.x + t*m.vx , y <- max 0 (m.y + t*m.vy) }
 walk {x} m = { m | vx <- toFloat x
                  , dir <- if x < 0 then "left" else
@@ -41,6 +41,8 @@ render (w',h') world _ =
                   |> move (0, 24 - h/2)
       , toForm (image 58 86 src) |> move (world.x, world.y + 62 - h/2)
       , toForm (image spriteSize spriteSize "media/Strep01.png") |> move (0, world.strepY) 
+      , toForm (image spriteSize spriteSize "media/Strep02.png") |> move (100, world.strepY + 50) 
+      , toForm (image spriteSize spriteSize "media/Strep03.png") |> move (-100, world.strepY + 100) 
       , toForm (image spriteSize spriteSize "media/Heart.png") |> move (0, strepMaxY) 
       ]
 
