@@ -1874,7 +1874,7 @@ Elm.Main.make = function (_elm) {
    m) {
       return _U.cmp(m.y,
       0) > 0 ? _U.replace([["vy"
-                           ,m.vy - t / 4]],
+                           ,m.vy - t / 16]],
       m) : m;
    });
    var jump = F2(function (_v2,m) {
@@ -1961,6 +1961,18 @@ Elm.Main.make = function (_elm) {
                                  spriteSize,
                                  "media/Strep01.png")))
                                  ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                         ,_0: 100
+                                                         ,_1: world.strepY + 50})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                 spriteSize,
+                                 spriteSize,
+                                 "media/Strep02.png")))
+                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                         ,_0: -100
+                                                         ,_1: world.strepY + 100})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                 spriteSize,
+                                 spriteSize,
+                                 "media/Strep03.png")))
+                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
                                                          ,_0: 0
                                                          ,_1: strepMaxY})($Graphics$Collage.toForm(A3($Graphics$Element.image,
                                  spriteSize,
@@ -1968,7 +1980,7 @@ Elm.Main.make = function (_elm) {
                                  "media/Heart.png")))]));
                  }();}
             _U.badCase($moduleName,
-            "between lines 33 and 45");
+            "between lines 33 and 47");
          }();
       }();
    });
