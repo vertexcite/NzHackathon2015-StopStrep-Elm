@@ -1923,7 +1923,8 @@ Elm.Main.make = function (_elm) {
    var scroll = F2(function (t,m) {
       return _U.cmp(m.strepY,
       strepMaxY) > 0 ? _U.replace([["strepY"
-                                   ,strepStartY]],
+                                   ,strepStartY]
+                                  ,["zapped",false]],
       m) : _U.replace([["strepY"
                        ,m.strepY + t]],
       m);
