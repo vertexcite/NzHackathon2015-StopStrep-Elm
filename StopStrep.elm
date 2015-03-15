@@ -16,7 +16,7 @@ strepStartY = 20
 -- MODEL
 
 
-world = { x=0, y=0, strepY=strepStartY, zapped= False }
+world = { strepY=strepStartY, zapped= False }
 
 
 -- UPDATE -- ("w" is for World)
@@ -40,13 +40,12 @@ step (dt, keys, touches, (w,h)) =
 -- DISPLAY
 render (w',h') world =
   let (w,h) = (toFloat w', toFloat h')
-      src = "media/Injection.png"
   in collage w' h'
       [ rect w h  |> filled (rgb 174 238 238)
       , rect w 50 |> filled (rgb 74 163 41)
                   |> move (0, 24 - h/2)
 --      , rect (toFloat (2*tolerance)) (toFloat (2*tolerance)) |> filled (rgb 255 255 255) |> move (0, world.strepY) -- Render hit zone
-      , toForm (image 58 86 src) |> move (world.x, world.y + 62 - h/2)
+      , toForm (image 58 86 "media/Injection.png") |> move (0, 0 + 62 - h/2)
       , toForm (image spriteSize spriteSize (if world.zapped then "media/BicillinTopUp.png" else "media/Strep01.png")) |> move (0, world.strepY) 
       , toForm (image spriteSize spriteSize "media/Strep02.png") |> move (100, world.strepY + 50) 
       , toForm (image spriteSize spriteSize "media/Strep03.png") |> move (-100, world.strepY + 100) 
