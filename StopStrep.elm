@@ -8,6 +8,7 @@ import Window
 import Touch
 import List
 import Maybe
+import Random (..)
 
 l !! n = List.head (List.drop n l)
 
@@ -23,29 +24,27 @@ strepStartXs = [strepStartX0, strepStartX1, strepStartX2]
 strepStartYs = [strepStartY0, strepStartY1, strepStartY2]
 -- MODEL
 
-type alias BicillinSprite = { id:Int, x:Float, y:Float, zapped:Bool, image:String}
+type alias BicillinSprite = { x:Float, y:Float, zapped:Bool, fizzled:Bool, image:String}
 
-strep0 = { id=0, x=strepStartX0, y=strepStartY0, zapped= False, image="media/Strep01.png"}
-strep1 = { id=1, x=strepStartX1, y=strepStartY1, zapped= False, image="media/Strep02.png" }
-strep2 = { id=2, x=strepStartX2, y=strepStartY2, zapped= False, image="media/Strep03.png" }
+strep0 = { x=strepStartX0, y=strepStartY0, zapped= False, fizzled=False, image="media/Strep01.png"}
+strep1 = { x=strepStartX1, y=strepStartY1, zapped= False, fizzled=False, image="media/Strep02.png" }
+strep2 = { x=strepStartX2, y=strepStartY2, zapped= False, fizzled=False, image="media/Strep03.png" }
 
-type alias World = List BicillinSprite
+type alias World = {seed: Seed, targets:List BicillinSprite}
 
 world : World
-world = [strep0, strep1, strep2]
+world = {seed = initialSeed 3103, targets = [strep0, strep1, strep2]}
 
 
 -- UPDATE -- ("w" is for World)
 scroll : Float -> World -> World
-scroll t w = List.map (scrollEach t) w
-scrollEach t s = if s.y > strepMaxY then { s | y <- strepStartYs!!s.id, zapped <- False } else {s | y <- s.y + t}
+scroll t w = {w | targets <- List.filter (\s -> s.fizzled == False) << List.map (scrollEach t) <|  w.targets}
+scrollEach t s = if s.y > strepMaxY then { s | fizzled <- True } else {s | y <- s.y + t}
 
 zap : Maybe (Int, Int) -> World -> World
-zap touch w = List.map (zapEach touch) w
+zap touch w = {w | targets <- List.map (zapEach touch) w.targets}
 zapEach touch s = Maybe.withDefault s ( Maybe.map (zap2 s) touch)
 zap2 s (x,y) = if (close (round s.x) x) && (close (round s.y) y) then {s | zapped <- True} else s
-
-
 
 tolerance : Int
 tolerance = 40
@@ -53,14 +52,35 @@ close : Int -> Int -> Bool
 close target actual = (actual > target - tolerance) && (actual < target + tolerance)
 
 step : (Float, List Touch.Touch, (Int, Int)) -> World -> World
-step (dt, touches, (width,height)) world =
+step (dt, touches, (width,height)) =
   let
     touch = if | List.isEmpty touches -> Nothing
                | otherwise -> Just ((List.head touches).x - round ((toFloat width)/2), round ((toFloat height)/2) - (List.head touches).y  )
-    zapped = zap touch world
-    scrolled = scroll dt zapped
---  in scroll dt >> zap touch
-  in scrolled
+--    zapped = zap touch world
+--    scrolled = scroll dt zapped
+  in possiblyAddBadGuy dt << scroll dt << zap touch
+--  in {world | targets <- scrolled}
+
+
+addProbability = 0.01
+
+
+possiblyAddBadGuy : Float -> World -> World
+possiblyAddBadGuy dt world =
+    let (choice, seed') =
+          generate (float 0 1) world.seed
+    in
+        if choice < addProbability * dt
+          then
+            let (position, seed'') = generate (pair (float (-100) 100) (float (-100) 100)) seed'
+            in
+                { world | targets <- { x= fst position, y=snd position, zapped= False, fizzled=False, image="media/Strep01.png"} :: world.targets,
+                          seed <- seed''
+                }
+          else
+            { world |
+                seed <- seed'
+            }
 
 -- DISPLAY
 render (w',h') world =
@@ -74,7 +94,7 @@ render (w',h') world =
 --      , toForm (image spriteSize spriteSize "media/Strep02.png") |> move (100, world.strepY + 50) 
 --      , toForm (image spriteSize spriteSize "media/Strep03.png") |> move (-100, world.strepY + 100) 
       , toForm (image spriteSize spriteSize "media/Heart.png") |> move (0, strepMaxY) 
-      ] `List.append` (List.map renderBicillinSprite world) ) 
+      ] `List.append` (List.map renderBicillinSprite world.targets) ) 
 renderBicillinSprite s = toForm (image spriteSize spriteSize (if s.zapped then "media/BicillinTopUp.png" else s.image)) |> move (s.x, s.y)
 
 -- WORLD
