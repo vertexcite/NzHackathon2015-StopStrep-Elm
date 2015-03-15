@@ -30,7 +30,7 @@ close : Int -> Int -> Bool
 close target actual = (actual > target - tolerance) && (actual < target + tolerance)
 
 
-step (dt, keys, touches, (w,h)) =
+step (dt, touches, (w,h)) =
   let
     touch = if | List.isEmpty touches -> Nothing
                | otherwise -> Just ((List.head touches).x - round ((toFloat w)/2), round ((toFloat h)/2) - (List.head touches).y  )
@@ -54,6 +54,6 @@ render (w',h') world =
 
 -- WORLD
 input = let delta = Signal.map (\t -> t/20) (fps 25)
-        in  Signal.sampleOn delta (Signal.map4 (,,,) delta Keyboard.arrows Touch.touches Window.dimensions)
+        in  Signal.sampleOn delta (Signal.map3 (,,) delta Touch.touches Window.dimensions)
 
 main = Signal.map2 render Window.dimensions (Signal.foldp step world input)
