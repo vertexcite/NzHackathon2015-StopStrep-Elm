@@ -59,7 +59,7 @@ possiblyAddBadGuy dt (width, height) world =
     let (choice, seed') =
           generate (float 0 1) world.seed
     in
-        if choice < addProbability * dt
+        if (List.length world.targets == 0) || (choice < addProbability * dt)
           then
             let
               xRange = toFloat width / 2
