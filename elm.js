@@ -1816,337 +1816,6 @@ Elm.List.make = function (_elm) {
                       ,sortWith: sortWith};
    return _elm.List.values;
 };
-Elm.Main = Elm.Main || {};
-Elm.Main.make = function (_elm) {
-   "use strict";
-   _elm.Main = _elm.Main || {};
-   if (_elm.Main.values)
-   return _elm.Main.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
-   $moduleName = "Main",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Window = Elm.Window.make(_elm);
-   var make = F2(function (obj,
-   shape) {
-      return $Graphics$Collage.move({ctor: "_Tuple2"
-                                    ,_0: obj.x
-                                    ,_1: obj.y})($Graphics$Collage.filled($Color.white)(shape));
-   });
-   var msg = "SPACE to start, WS and &uarr;&darr; to move";
-   var textGreen = A3($Color.rgb,
-   160,
-   200,
-   160);
-   var txt = function (f) {
-      return function ($) {
-         return $Text.leftAligned(f($Text.monospace($Text.color(textGreen)($Text.fromString($)))));
-      };
-   };
-   var pongGreen = A3($Color.rgb,
-   60,
-   100,
-   60);
-   var stepV = F3(function (v,
-   lowerCollision,
-   upperCollision) {
-      return lowerCollision ? $Basics.abs(v) : upperCollision ? 0 - $Basics.abs(v) : v;
-   });
-   var near = F3(function (k,c,n) {
-      return _U.cmp(n,
-      k - c) > -1 && _U.cmp(n,
-      k + c) < 1;
-   });
-   var within = F2(function (ball,
-   paddle) {
-      return A3(near,
-      paddle.x,
-      8,
-      ball.x) && A3(near,
-      paddle.y,
-      20,
-      ball.y);
-   });
-   var physicsUpdate = F2(function (t,
-   _v0) {
-      return function () {
-         return _U.replace([["x"
-                            ,_v0.x + _v0.vx * t]
-                           ,["y",_v0.y + _v0.vy * t]],
-         _v0);
-      }();
-   });
-   var Input = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,delta: d
-             ,dir1: b
-             ,dir2: c
-             ,space: a};
-   });
-   var player = function (x) {
-      return {_: {}
-             ,score: 0
-             ,vx: 0
-             ,vy: 0
-             ,x: x
-             ,y: 0};
-   };
-   var Game = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,ball: b
-             ,player1: c
-             ,player2: d
-             ,state: a};
-   });
-   var Player = F5(function (a,
-   b,
-   c,
-   d,
-   e) {
-      return {_: {}
-             ,score: e
-             ,vx: c
-             ,vy: d
-             ,x: a
-             ,y: b};
-   });
-   var Ball = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,vx: c
-             ,vy: d
-             ,x: a
-             ,y: b};
-   });
-   var Pause = {ctor: "Pause"};
-   var Play = {ctor: "Play"};
-   var $ = {ctor: "_Tuple2"
-           ,_0: 300
-           ,_1: 200},
-   halfWidth = $._0,
-   halfHeight = $._1;
-   var defaultGame = {_: {}
-                     ,ball: {_: {}
-                            ,vx: 200
-                            ,vy: 200
-                            ,x: 0
-                            ,y: 0}
-                     ,player1: player(20 - halfWidth)
-                     ,player2: player(halfWidth - 20)
-                     ,state: Pause};
-   var updateBall = F4(function (t,
-   _v2,
-   p1,
-   p2) {
-      return function () {
-         return $Basics.not(A2(near,
-         0,
-         halfWidth)(_v2.x)) ? _U.replace([["x"
-                                          ,0]
-                                         ,["y",0]],
-         _v2) : A2(physicsUpdate,
-         t,
-         _U.replace([["vx"
-                     ,A3(stepV,
-                     _v2.vx,
-                     A2(within,_v2,p1),
-                     A2(within,_v2,p2))]
-                    ,["vy"
-                     ,A3(stepV,
-                     _v2.vy,
-                     _U.cmp(_v2.y,
-                     7 - halfHeight) < 0,
-                     _U.cmp(_v2.y,
-                     halfHeight - 7) > 0)]],
-         _v2));
-      }();
-   });
-   var updatePlayer = F4(function (t,
-   dir,
-   points,
-   player) {
-      return function () {
-         var player1 = A2(physicsUpdate,
-         t,
-         _U.replace([["vy"
-                     ,$Basics.toFloat(dir) * 200]],
-         player));
-         return _U.replace([["y"
-                            ,A3($Basics.clamp,
-                            22 - halfHeight,
-                            halfHeight - 22,
-                            player1.y)]
-                           ,["score"
-                            ,player.score + points]],
-         player1);
-      }();
-   });
-   var update = F2(function (_v4,
-   _v5) {
-      return function () {
-         return function () {
-            return function () {
-               var newBall = _U.eq(_v5.state,
-               Pause) ? _v5.ball : A4(updateBall,
-               _v4.delta,
-               _v5.ball,
-               _v5.player1,
-               _v5.player2);
-               var score2 = _U.cmp(_v5.ball.x,
-               0 - halfWidth) < 0 ? 1 : 0;
-               var score1 = _U.cmp(_v5.ball.x,
-               halfWidth) > 0 ? 1 : 0;
-               var newState = _v4.space ? Play : !_U.eq(score1,
-               score2) ? Pause : _v5.state;
-               return _U.replace([["state"
-                                  ,newState]
-                                 ,["ball",newBall]
-                                 ,["player1"
-                                  ,A4(updatePlayer,
-                                  _v4.delta,
-                                  _v4.dir1,
-                                  score1,
-                                  _v5.player1)]
-                                 ,["player2"
-                                  ,A4(updatePlayer,
-                                  _v4.delta,
-                                  _v4.dir2,
-                                  score2,
-                                  _v5.player2)]],
-               _v5);
-            }();
-         }();
-      }();
-   });
-   var $ = {ctor: "_Tuple2"
-           ,_0: 600
-           ,_1: 400},
-   gameWidth = $._0,
-   gameHeight = $._1;
-   var view = F2(function (_v8,
-   _v9) {
-      return function () {
-         return function () {
-            switch (_v8.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var scores = A2(txt,
-                    $Text.height(50),
-                    A2($Basics._op["++"],
-                    $Basics.toString(_v9.player1.score),
-                    A2($Basics._op["++"],
-                    "  ",
-                    $Basics.toString(_v9.player2.score))));
-                    return A3($Graphics$Element.container,
-                    _v8._0,
-                    _v8._1,
-                    $Graphics$Element.middle)(A3($Graphics$Collage.collage,
-                    gameWidth,
-                    gameHeight,
-                    _L.fromArray([$Graphics$Collage.filled(pongGreen)(A2($Graphics$Collage.rect,
-                                 gameWidth,
-                                 gameHeight))
-                                 ,make(_v9.ball)(A2($Graphics$Collage.oval,
-                                 15,
-                                 15))
-                                 ,make(_v9.player1)(A2($Graphics$Collage.rect,
-                                 10,
-                                 40))
-                                 ,make(_v9.player2)(A2($Graphics$Collage.rect,
-                                 10,
-                                 40))
-                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
-                                                         ,_0: 0
-                                                         ,_1: gameHeight / 2 - 40})($Graphics$Collage.toForm(scores))
-                                 ,$Graphics$Collage.move({ctor: "_Tuple2"
-                                                         ,_0: 0
-                                                         ,_1: 40 - gameHeight / 2})($Graphics$Collage.toForm(_U.eq(_v9.state,
-                                 Play) ? A2($Graphics$Element.spacer,
-                                 1,
-                                 1) : A2(txt,
-                                 $Basics.identity,
-                                 msg)))])));
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 143 and 160");
-         }();
-      }();
-   });
-   var delta = A2($Signal.map,
-   $Time.inSeconds,
-   $Time.fps(35));
-   var input = $Signal.sampleOn(delta)(A5($Signal.map4,
-   Input,
-   $Keyboard.space,
-   A2($Signal.map,
-   function (_) {
-      return _.y;
-   },
-   $Keyboard.wasd),
-   A2($Signal.map,
-   function (_) {
-      return _.y;
-   },
-   $Keyboard.arrows),
-   delta));
-   var gameState = A3($Signal.foldp,
-   update,
-   defaultGame,
-   input);
-   var main = A3($Signal.map2,
-   view,
-   $Window.dimensions,
-   gameState);
-   _elm.Main.values = {_op: _op
-                      ,main: main
-                      ,gameState: gameState
-                      ,delta: delta
-                      ,input: input
-                      ,gameHeight: gameHeight
-                      ,gameWidth: gameWidth
-                      ,halfHeight: halfHeight
-                      ,halfWidth: halfWidth
-                      ,Play: Play
-                      ,Pause: Pause
-                      ,Ball: Ball
-                      ,Player: Player
-                      ,Game: Game
-                      ,player: player
-                      ,defaultGame: defaultGame
-                      ,Input: Input
-                      ,update: update
-                      ,updateBall: updateBall
-                      ,updatePlayer: updatePlayer
-                      ,physicsUpdate: physicsUpdate
-                      ,near: near
-                      ,within: within
-                      ,stepV: stepV
-                      ,view: view
-                      ,pongGreen: pongGreen
-                      ,textGreen: textGreen
-                      ,txt: txt
-                      ,msg: msg
-                      ,make: make};
-   return _elm.Main.values;
-};
 Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
    "use strict";
@@ -4826,178 +4495,6 @@ Elm.Native.Signal.make = function(localRuntime) {
   };
 };
 
-Elm.Native.Text = {};
-Elm.Native.Text.make = function(elm) {
-    elm.Native = elm.Native || {};
-    elm.Native.Text = elm.Native.Text || {};
-    if (elm.Native.Text.values) return elm.Native.Text.values;
-
-    var toCss = Elm.Native.Color.make(elm).toCss;
-    var Element = Elm.Graphics.Element.make(elm);
-    var NativeElement = Elm.Native.Graphics.Element.make(elm);
-    var List = Elm.Native.List.make(elm);
-    var Utils = Elm.Native.Utils.make(elm);
-
-    function makeSpaces(s) {
-        if (s.length == 0) { return s; }
-        var arr = s.split('');
-        if (arr[0] == ' ') { arr[0] = "&nbsp;" }      
-        for (var i = arr.length; --i; ) {
-            if (arr[i][0] == ' ' && arr[i-1] == ' ') {
-                arr[i-1] = arr[i-1] + arr[i];
-                arr[i] = '';
-            }
-        }
-        for (var i = arr.length; i--; ) {
-            if (arr[i].length > 1 && arr[i][0] == ' ') {
-                var spaces = arr[i].split('');
-                for (var j = spaces.length - 2; j >= 0; j -= 2) {
-                    spaces[j] = '&nbsp;';
-                }
-                arr[i] = spaces.join('');
-            }
-        }
-        arr = arr.join('');
-        if (arr[arr.length-1] === " ") {
-            return arr.slice(0,-1) + '&nbsp;';
-        }
-        return arr;
-    }
-
-    function properEscape(str) {
-        if (str.length == 0) return str;
-        str = str //.replace(/&/g,  "&#38;")
-            .replace(/"/g,  '&#34;')
-            .replace(/'/g,  "&#39;")
-            .replace(/</g,  "&#60;")
-            .replace(/>/g,  "&#62;")
-            .replace(/\n/g, "<br/>");
-        var arr = str.split('<br/>');
-        for (var i = arr.length; i--; ) {
-            arr[i] = makeSpaces(arr[i]);
-        }
-        return arr.join('<br/>');
-    }
-
-    function fromString(str) {
-        return Utils.txt(properEscape(str));
-    }
-
-    function append(xs, ys) {
-        return Utils.txt(Utils.makeText(xs) + Utils.makeText(ys));
-    }
-
-    // conversions from Elm values to CSS
-    function toTypefaces(list) {
-        var typefaces = List.toArray(list);
-        for (var i = typefaces.length; i--; ) {
-            var typeface = typefaces[i];
-            if (typeface.indexOf(' ') > -1) {
-                typefaces[i] = "'" + typeface + "'";
-            }
-        }
-        return typefaces.join(',');
-    }
-    function toLine(line) {
-        var ctor = line.ctor;
-        return ctor === 'Under' ? 'underline' :
-               ctor === 'Over'  ? 'overline'  : 'line-through';
-    }
-
-    // setting styles of Text
-    function style(style, text) {
-        var newText = '<span style="color:' + toCss(style.color) + ';'
-        if (style.typeface.ctor !== '[]') {
-            newText += 'font-family:' + toTypefaces(style.typeface) + ';'
-        }
-        if (style.height.ctor !== "Nothing") {
-            newText += 'font-size:' + style.height._0 + 'px;';
-        }
-        if (style.bold) {
-            newText += 'font-weight:bold;';
-        }
-        if (style.italic) {
-            newText += 'font-style:italic;';
-        }
-        if (style.line.ctor !== 'Nothing') {
-            newText += 'text-decoration:' + toLine(style.line._0) + ';';
-        }
-        newText += '">' + Utils.makeText(text) + '</span>'
-        return Utils.txt(newText);
-    }
-    function height(px, text) {
-        return { style: 'font-size:' + px + 'px;', text:text }
-    }
-    function typeface(names, text) {
-        return { style: 'font-family:' + toTypefaces(names) + ';', text:text }
-    }
-    function monospace(text) {
-        return { style: 'font-family:monospace;', text:text }
-    }
-    function italic(text) {
-        return { style: 'font-style:italic;', text:text }
-    }
-    function bold(text) {
-        return { style: 'font-weight:bold;', text:text }
-    }
-    function link(href, text) {
-        return { href: fromString(href), text:text };
-    }
-    function line(line, text) {
-        return { style: 'text-decoration:' + toLine(line) + ';', text:text };
-    }
-
-    function color(color, text) {
-        return { style: 'color:' + toCss(color) + ';', text:text };
-    }
-
-    function block(align) {
-        return function(text) {
-            var raw = {
-                ctor :'RawHtml',
-                html : Utils.makeText(text),
-                align: align
-            };
-            var pos = A2(NativeElement.htmlHeight, 0, raw);
-            return A3(Element.newElement, pos._0, pos._1, raw);
-        }
-    }
-
-    function markdown(text) {
-        var raw = {
-            ctor:'RawHtml',
-            html: text,
-            align: null
-        };
-        var pos = A2(NativeElement.htmlHeight, 0, raw);
-        return A3(Element.newElement, pos._0, pos._1, raw);
-    }
-
-    return elm.Native.Text.values = {
-        fromString: fromString,
-        append: F2(append),
-
-        height : F2(height),
-        italic : italic,
-        bold : bold,
-        line : F2(line),
-        monospace : monospace,
-        typeface : F2(typeface),
-        color : F2(color),
-        link : F2(link),
-        style : F2(style),
-
-        leftAligned  : block('left'),
-        rightAligned : block('right'),
-        centered     : block('center'),
-        justified    : block('justify'),
-        markdown     : markdown,
-
-        toTypefaces:toTypefaces,
-        toLine:toLine
-    };
-};
-
 Elm.Native.Time = {};
 Elm.Native.Time.make = function(elm) {
 
@@ -5060,6 +4557,178 @@ Elm.Native.Time.make = function(elm) {
       toDate : function(t) { return new window.Date(t); },
       read   : read
   };
+
+};
+
+Elm.Native = Elm.Native || {};
+Elm.Native.Touch = {};
+Elm.Native.Touch.make = function(localRuntime) {
+
+    localRuntime.Native = localRuntime.Native || {};
+    localRuntime.Native.Touch = localRuntime.Native.Touch || {};
+    if (localRuntime.Native.Touch.values) {
+        return localRuntime.Native.Touch.values;
+    }
+
+    var Signal = Elm.Signal.make(localRuntime);
+    var List = Elm.Native.List.make(localRuntime);
+    var Utils = Elm.Native.Utils.make(localRuntime);
+
+    function Dict() {
+        this.keys = [];
+        this.values = [];
+
+        this.insert = function(key,value) {
+            this.keys.push(key);
+            this.values.push(value);
+        };
+        this.lookup = function(key) {
+            var i = this.keys.indexOf(key)
+            return i >= 0 ? this.values[i] : {x:0,y:0,t:0};
+        };
+        this.remove = function(key) {
+            var i = this.keys.indexOf(key);
+            if (i < 0) return;
+            var t = this.values[i];
+            this.keys.splice(i,1);
+            this.values.splice(i,1);
+            return t;
+        };
+        this.clear = function() {
+            this.keys = [];
+            this.values = [];
+        };
+    }
+    
+    var root = Signal.constant([]),
+    tapTime = 500,
+    hasTap = false,
+    tap = {_:{},x:0,y:0},
+    dict = new Dict();
+
+    function touch(t) {
+        var r = dict.lookup(t.identifier);
+        var point = Utils.getXY(t);
+        return {
+            _ : {},
+            id: t.identifier,
+            x : point._0,
+            y : point._1,
+            x0: r.x,
+            y0: r.y,
+            t0: r.t
+         };
+    }
+
+    var node = localRuntime.isFullscreen()
+        ? document
+        : localRuntime.node;
+
+    function start(e) {
+        var point = Utils.getXY(e);
+        dict.insert(e.identifier, {
+            x: point._0,
+            y: point._1,
+            t: localRuntime.timer.now()
+        });
+    }
+    function end(e) {
+        var t = dict.remove(e.identifier);
+        if (localRuntime.timer.now() - t.t < tapTime) {
+            hasTap = true;
+            tap = {
+                _: {},
+                x: t.x,
+                y: t.y
+            };
+        }
+    }
+
+    function listen(name, f) {
+        function update(e) {
+            for (var i = e.changedTouches.length; i--; ) {
+                f(e.changedTouches[i]);
+            }
+            var ts = new Array(e.touches.length);
+            for (var i = e.touches.length; i--; ) {
+                ts[i] = touch(e.touches[i]);
+            }
+            localRuntime.notify(root.id, ts);
+            e.preventDefault();
+        }
+        localRuntime.addListener([root.id], node, name, update);
+    }
+
+    listen("touchstart", start);
+    listen("touchmove", function(_){});
+    listen("touchend", end);
+    listen("touchcancel", end);
+    listen("touchleave", end);
+
+    var mouseID = -1;
+    function move(e) {
+        var point = Utils.getXY(e);
+        for (var i = root.value.length; i--; ) {
+            if (root.value[i].id === mouseID) {
+                root.value[i].x = point._0;
+                root.value[i].y = point._1;
+                localRuntime.notify(root.id, root.value);
+                break;
+            }
+        }
+    }
+    localRuntime.addListener([root.id], node, "mousedown", function down(e) {
+        node.addEventListener("mousemove", move);
+        e.identifier = mouseID;
+        start(e);
+        root.value.push(touch(e));
+        localRuntime.notify(root.id, root.value);
+    });
+    localRuntime.addListener([root.id], document, "mouseup", function up(e) {
+        node.removeEventListener("mousemove", move);
+        e.identifier = mouseID;
+        end(e);
+        for (var i = root.value.length; i--; ) {
+            if (root.value[i].id === mouseID) {
+                root.value.splice(i, 1);
+                --mouseID;
+                break;
+            }
+        }
+        localRuntime.notify(root.id, root.value);
+    });
+    localRuntime.addListener([root.id], node, "blur", function blur(e) {
+        node.removeEventListener("mousemove", move);
+        if (root.value.length > 0) {
+            localRuntime.notify(root.id, []);
+            --mouseID;
+        }
+        dict.clear();
+    });
+
+    function dependency(f) {
+        var sig = A2( Signal.map, f, root );
+        root.defaultNumberOfKids += 1;
+        sig.defaultNumberOfKids = 0;
+        return sig;
+    }
+
+    var touches = dependency(List.fromArray);
+
+    var taps = function() {
+        var sig = dependency(function(_) { return tap; });
+        sig.defaultNumberOfKids = 1;
+        function pred(_) {
+            var b = hasTap;
+            hasTap = false;
+            return b;
+        }
+        var sig2 = A3( Signal.keepIf, pred, {_:{},x:0,y:0}, sig);
+        sig2.defaultNumberOfKids = 0;
+        return sig2;
+    }();
+
+    return localRuntime.Native.Touch.values = { touches: touches, taps: taps };
 
 };
 
@@ -5532,6 +5201,292 @@ Elm.Native.Window.make = function(localRuntime) {
 
 };
 
+Elm.Random = Elm.Random || {};
+Elm.Random.make = function (_elm) {
+   "use strict";
+   _elm.Random = _elm.Random || {};
+   if (_elm.Random.values)
+   return _elm.Random.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Random",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm);
+   var magicNum8 = 2147483562;
+   var range = function (_v0) {
+      return function () {
+         return {ctor: "_Tuple2"
+                ,_0: 0
+                ,_1: magicNum8};
+      }();
+   };
+   var magicNum7 = 2137383399;
+   var magicNum6 = 2147483563;
+   var magicNum5 = 3791;
+   var magicNum4 = 40692;
+   var magicNum3 = 52774;
+   var magicNum2 = 12211;
+   var magicNum1 = 53668;
+   var magicNum0 = 40014;
+   var generate = F2(function (_v2,
+   seed) {
+      return function () {
+         switch (_v2.ctor)
+         {case "Generator":
+            return _v2._0(seed);}
+         _U.badCase($moduleName,
+         "on line 247, column 5 to 19");
+      }();
+   });
+   var Seed = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,next: b
+             ,range: d
+             ,split: c
+             ,state: a};
+   });
+   var State = F2(function (a,b) {
+      return {ctor: "State"
+             ,_0: a
+             ,_1: b};
+   });
+   var initState = function (s$) {
+      return function () {
+         var s = A2($Basics.max,
+         s$,
+         0 - s$);
+         var q = s / (magicNum6 - 1) | 0;
+         var s2 = A2($Basics._op["%"],
+         q,
+         magicNum7 - 1);
+         var s1 = A2($Basics._op["%"],
+         s,
+         magicNum6 - 1);
+         return A2(State,s1 + 1,s2 + 1);
+      }();
+   };
+   var next = function (_v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "State":
+            return function () {
+                 var k$ = _v5._1 / magicNum3 | 0;
+                 var s2$ = magicNum4 * (_v5._1 - k$ * magicNum3) - k$ * magicNum5;
+                 var s2$$ = _U.cmp(s2$,
+                 0) < 0 ? s2$ + magicNum7 : s2$;
+                 var k = _v5._0 / magicNum1 | 0;
+                 var s1$ = magicNum0 * (_v5._0 - k * magicNum1) - k * magicNum2;
+                 var s1$$ = _U.cmp(s1$,
+                 0) < 0 ? s1$ + magicNum6 : s1$;
+                 var z = s1$$ - s2$$;
+                 var z$ = _U.cmp(z,
+                 1) < 0 ? z + magicNum8 : z;
+                 return {ctor: "_Tuple2"
+                        ,_0: z$
+                        ,_1: A2(State,s1$$,s2$$)};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 291 and 300");
+      }();
+   };
+   var split = function (_v9) {
+      return function () {
+         switch (_v9.ctor)
+         {case "State":
+            return function () {
+                 var _raw = $Basics.snd(next(_v9)),
+                 $ = _raw.ctor === "State" ? _raw : _U.badCase($moduleName,
+                 "on line 307, column 25 to 38"),
+                 t1 = $._0,
+                 t2 = $._1;
+                 var new_s2 = _U.eq(_v9._1,
+                 1) ? magicNum7 - 1 : _v9._1 - 1;
+                 var new_s1 = _U.eq(_v9._0,
+                 magicNum6 - 1) ? 1 : _v9._0 + 1;
+                 return {ctor: "_Tuple2"
+                        ,_0: A2(State,new_s1,t2)
+                        ,_1: A2(State,t1,new_s2)};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 305 and 309");
+      }();
+   };
+   var initialSeed = function (n) {
+      return A4(Seed,
+      initState(n),
+      next,
+      split,
+      range);
+   };
+   var Generator = function (a) {
+      return {ctor: "Generator"
+             ,_0: a};
+   };
+   var customGenerator = function (generate) {
+      return Generator(generate);
+   };
+   var listHelp = F4(function (list,
+   n,
+   generate,
+   seed) {
+      return _U.cmp(n,
+      1) < 0 ? {ctor: "_Tuple2"
+               ,_0: $List.reverse(list)
+               ,_1: seed} : function () {
+         var $ = generate(seed),
+         value = $._0,
+         seed$ = $._1;
+         return A4(listHelp,
+         A2($List._op["::"],value,list),
+         n - 1,
+         generate,
+         seed$);
+      }();
+   });
+   var list = F2(function (n,
+   _v13) {
+      return function () {
+         switch (_v13.ctor)
+         {case "Generator":
+            return Generator(function (seed) {
+                 return A4(listHelp,
+                 _L.fromArray([]),
+                 n,
+                 _v13._0,
+                 seed);
+              });}
+         _U.badCase($moduleName,
+         "between lines 183 and 184");
+      }();
+   });
+   var pair = F2(function (_v16,
+   _v17) {
+      return function () {
+         switch (_v17.ctor)
+         {case "Generator":
+            return function () {
+                 switch (_v16.ctor)
+                 {case "Generator":
+                    return Generator(function (seed) {
+                         return function () {
+                            var $ = _v16._0(seed),
+                            left = $._0,
+                            seed$ = $._1;
+                            var $ = _v17._0(seed$),
+                            right = $._0,
+                            seed$$ = $._1;
+                            return {ctor: "_Tuple2"
+                                   ,_0: {ctor: "_Tuple2"
+                                        ,_0: left
+                                        ,_1: right}
+                                   ,_1: seed$$};
+                         }();
+                      });}
+                 _U.badCase($moduleName,
+                 "between lines 160 and 164");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 160 and 164");
+      }();
+   });
+   var minInt = -2147483648;
+   var maxInt = 2147483647;
+   var iLogBase = F2(function (b,
+   i) {
+      return _U.cmp(i,
+      b) < 0 ? 1 : 1 + A2(iLogBase,
+      b,
+      i / b | 0);
+   });
+   var $int = F2(function (a,b) {
+      return Generator(function (seed) {
+         return function () {
+            var base = 2147483561;
+            var f = F3(function (n,
+            acc,
+            state) {
+               return function () {
+                  switch (n)
+                  {case 0: return {ctor: "_Tuple2"
+                                  ,_0: acc
+                                  ,_1: state};}
+                  return function () {
+                     var $ = seed.next(state),
+                     x = $._0,
+                     state$ = $._1;
+                     return A3(f,
+                     n - 1,
+                     x + acc * base,
+                     state$);
+                  }();
+               }();
+            });
+            var $ = _U.cmp(a,
+            b) < 0 ? {ctor: "_Tuple2"
+                     ,_0: a
+                     ,_1: b} : {ctor: "_Tuple2"
+                               ,_0: b
+                               ,_1: a},
+            lo = $._0,
+            hi = $._1;
+            var k = hi - lo + 1;
+            var n = A2(iLogBase,base,k);
+            var $ = A3(f,n,1,seed.state),
+            v = $._0,
+            state$ = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: lo + A2($Basics._op["%"],
+                   v,
+                   k)
+                   ,_1: _U.replace([["state"
+                                    ,state$]],
+                   seed)};
+         }();
+      });
+   });
+   var $float = F2(function (a,b) {
+      return Generator(function (seed) {
+         return function () {
+            var $ = A2(generate,
+            A2($int,minInt,maxInt),
+            seed),
+            number = $._0,
+            seed$ = $._1;
+            var negativeOneToOne = $Basics.toFloat(number) / $Basics.toFloat(maxInt - minInt);
+            var $ = _U.cmp(a,
+            b) < 0 ? {ctor: "_Tuple2"
+                     ,_0: a
+                     ,_1: b} : {ctor: "_Tuple2"
+                               ,_0: b
+                               ,_1: a},
+            lo = $._0,
+            hi = $._1;
+            var scaled = (lo + hi) / 2 + (hi - lo) * negativeOneToOne;
+            return {ctor: "_Tuple2"
+                   ,_0: scaled
+                   ,_1: seed$};
+         }();
+      });
+   });
+   _elm.Random.values = {_op: _op
+                        ,$int: $int
+                        ,$float: $float
+                        ,list: list
+                        ,pair: pair
+                        ,minInt: minInt
+                        ,maxInt: maxInt
+                        ,generate: generate
+                        ,initialSeed: initialSeed
+                        ,customGenerator: customGenerator
+                        ,Seed: Seed};
+   return _elm.Random.values;
+};
 Elm.Result = Elm.Result || {};
 Elm.Result.make = function (_elm) {
    "use strict";
@@ -5877,113 +5832,314 @@ Elm.Signal.make = function (_elm) {
                         ,subscribe: subscribe};
    return _elm.Signal.values;
 };
-Elm.Text = Elm.Text || {};
-Elm.Text.make = function (_elm) {
+Elm.StopStrep = Elm.StopStrep || {};
+Elm.StopStrep.make = function (_elm) {
    "use strict";
-   _elm.Text = _elm.Text || {};
-   if (_elm.Text.values)
-   return _elm.Text.values;
+   _elm.StopStrep = _elm.StopStrep || {};
+   if (_elm.StopStrep.values)
+   return _elm.StopStrep.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    _P = _N.Ports.make(_elm),
-   $moduleName = "Text",
+   $moduleName = "StopStrep",
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Native$Text = Elm.Native.Text.make(_elm);
-   var markdown = $Native$Text.markdown;
-   var justified = $Native$Text.justified;
-   var centered = $Native$Text.centered;
-   var rightAligned = $Native$Text.rightAligned;
-   var leftAligned = $Native$Text.leftAligned;
-   var line = $Native$Text.line;
-   var italic = $Native$Text.italic;
-   var bold = $Native$Text.bold;
-   var color = $Native$Text.color;
-   var height = $Native$Text.height;
-   var link = $Native$Text.link;
-   var monospace = $Native$Text.monospace;
-   var typeface = $Native$Text.typeface;
-   var style = $Native$Text.style;
-   var append = $Native$Text.append;
-   var fromString = $Native$Text.fromString;
-   var empty = fromString("");
-   var concat = function (texts) {
-      return A3($List.foldr,
-      append,
-      empty,
-      texts);
-   };
-   var join = F2(function (seperator,
-   texts) {
-      return concat(A2($List.intersperse,
-      seperator,
-      texts));
+   $Random = Elm.Random.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Touch = Elm.Touch.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var input = function () {
+      var delta = A2($Signal.map,
+      function (t) {
+         return t / 20;
+      },
+      $Time.fps(25));
+      return A2($Signal.sampleOn,
+      delta,
+      A4($Signal.map3,
+      F3(function (v0,v1,v2) {
+         return {ctor: "_Tuple3"
+                ,_0: v0
+                ,_1: v1
+                ,_2: v2};
+      }),
+      delta,
+      $Touch.touches,
+      $Window.dimensions));
+   }();
+   var yMarginRatio = 0.2;
+   var addProbability = 1.0e-2;
+   var possiblyAddBadGuy = F3(function (dt,
+   _v0,
+   world) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var $ = A2($Random.generate,
+                 A2($Random.$float,0,1),
+                 world.seed),
+                 choice = $._0,
+                 seed$ = $._1;
+                 return _U.eq($List.length(world.targets),
+                 0) || _U.cmp(choice,
+                 addProbability * dt) < 0 ? function () {
+                    var xRange = $Basics.toFloat(_v0._0) / 2;
+                    var $ = A2($Random.generate,
+                    A2($Random.pair,
+                    A2($Random.$float,
+                    0 - xRange,
+                    xRange),
+                    A2($Random.$float,
+                    (0 - (1 - yMarginRatio)) / 2 * $Basics.toFloat(_v0._1),
+                    0)),
+                    seed$),
+                    position = $._0,
+                    seed$$ = $._1;
+                    return _U.replace([["targets"
+                                       ,A2($List._op["::"],
+                                       {_: {}
+                                       ,fizzled: false
+                                       ,image: "media/Strep01.png"
+                                       ,x: $Basics.fst(position)
+                                       ,y: $Basics.snd(position)
+                                       ,zapped: false},
+                                       world.targets)]
+                                      ,["seed",seed$$]],
+                    world);
+                 }() : _U.replace([["seed"
+                                   ,seed$]],
+                 world);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 59 and 74");
+      }();
    });
-   var plainText = function (str) {
-      return leftAligned(fromString(str));
-   };
-   var asText = function (value) {
-      return leftAligned(monospace(fromString($Basics.toString(value))));
-   };
-   var defaultStyle = {_: {}
-                      ,bold: false
-                      ,color: $Color.black
-                      ,height: $Maybe.Nothing
-                      ,italic: false
-                      ,line: $Maybe.Nothing
-                      ,typeface: _L.fromArray([])};
-   var Style = F6(function (a,
+   var close = F3(function (spriteSize,
+   target,
+   actual) {
+      return _U.cmp(2 * $Basics.abs(actual - target),
+      spriteSize) < 0;
+   });
+   var zap2 = F3(function (spriteSize,
+   s,
+   _v4) {
+      return function () {
+         switch (_v4.ctor)
+         {case "_Tuple2":
+            return A3(close,
+              spriteSize,
+              $Basics.round(s.x),
+              _v4._0) && A3(close,
+              spriteSize,
+              $Basics.round(s.y),
+              _v4._1) ? _U.replace([["zapped"
+                                    ,true]],
+              s) : s;}
+         _U.badCase($moduleName,
+         "on line 41, column 27 to 131");
+      }();
+   });
+   var zapEach = F3(function (spriteSize,
+   touch,
+   s) {
+      return A2($Maybe.withDefault,
+      s,
+      A2($Maybe.map,
+      A2(zap2,spriteSize,s),
+      touch));
+   });
+   var portSeed = _P.portIn("portSeed",
+   function (v) {
+      return typeof v === "number" ? v : _U.badPort("a number",
+      v);
+   });
+   var world = {_: {}
+               ,seed: $Random.initialSeed(portSeed)
+               ,targets: _L.fromArray([])};
+   var World = F2(function (a,b) {
+      return {_: {}
+             ,seed: a
+             ,targets: b};
+   });
+   var BicillinSprite = F5(function (a,
    b,
    c,
    d,
-   e,
-   f) {
+   e) {
       return {_: {}
-             ,bold: d
-             ,color: c
-             ,height: b
-             ,italic: e
-             ,line: f
-             ,typeface: a};
+             ,fizzled: d
+             ,image: e
+             ,x: a
+             ,y: b
+             ,zapped: c};
    });
-   var Through = {ctor: "Through"};
-   var Over = {ctor: "Over"};
-   var Under = {ctor: "Under"};
-   var Text = {ctor: "Text"};
-   _elm.Text.values = {_op: _op
-                      ,Text: Text
-                      ,Under: Under
-                      ,Over: Over
-                      ,Through: Through
-                      ,Style: Style
-                      ,defaultStyle: defaultStyle
-                      ,fromString: fromString
-                      ,empty: empty
-                      ,append: append
-                      ,concat: concat
-                      ,join: join
-                      ,style: style
-                      ,typeface: typeface
-                      ,monospace: monospace
-                      ,link: link
-                      ,height: height
-                      ,color: color
-                      ,bold: bold
-                      ,italic: italic
-                      ,line: line
-                      ,leftAligned: leftAligned
-                      ,rightAligned: rightAligned
-                      ,centered: centered
-                      ,justified: justified
-                      ,plainText: plainText
-                      ,markdown: markdown
-                      ,asText: asText};
-   return _elm.Text.values;
+   var strepMaxY = 200;
+   var scrollEach = F2(function (t,
+   s) {
+      return _U.cmp(s.y,
+      strepMaxY) > 0 ? _U.replace([["fizzled"
+                                   ,true]],
+      s) : _U.replace([["y",s.y + t]],
+      s);
+   });
+   var scroll = F2(function (t,w) {
+      return _U.replace([["targets"
+                         ,$List.filter(function (s) {
+                            return _U.eq(s.fizzled,
+                            false);
+                         })($List.map(scrollEach(t))(w.targets))]],
+      w);
+   });
+   var spriteToSpanRatio = 1 / 10;
+   var proportionedSpriteSize = F2(function (width,
+   height) {
+      return $Basics.round(spriteToSpanRatio * $Basics.toFloat(A2($Basics.min,
+      width,
+      height)));
+   });
+   var zap = F3(function (touch,
+   _v8,
+   w) {
+      return function () {
+         switch (_v8.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var spriteSize = A2(proportionedSpriteSize,
+                 _v8._0,
+                 _v8._1);
+                 return _U.replace([["targets"
+                                    ,A2($List.map,
+                                    A2(zapEach,spriteSize,touch),
+                                    w.targets)]],
+                 w);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 38 and 39");
+      }();
+   });
+   var step = function (_v12) {
+      return function () {
+         switch (_v12.ctor)
+         {case "_Tuple3":
+            switch (_v12._2.ctor)
+              {case "_Tuple2":
+                 return function () {
+                      var touch = $List.isEmpty(_v12._1) ? $Maybe.Nothing : $Maybe.Just({ctor: "_Tuple2"
+                                                                                        ,_0: $List.head(_v12._1).x - $Basics.round($Basics.toFloat(_v12._2._0) / 2)
+                                                                                        ,_1: $Basics.round($Basics.toFloat(_v12._2._1) / 2) - $List.head(_v12._1).y});
+                      return function ($) {
+                         return A2(possiblyAddBadGuy,
+                         _v12._0,
+                         {ctor: "_Tuple2"
+                         ,_0: _v12._2._0
+                         ,_1: _v12._2._1})(scroll(_v12._0)(A2(zap,
+                         touch,
+                         {ctor: "_Tuple2"
+                         ,_0: _v12._2._0
+                         ,_1: _v12._2._1})($)));
+                      };
+                   }();}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 48 and 51");
+      }();
+   };
+   var render = F2(function (_v19,
+   world) {
+      return function () {
+         switch (_v19.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var spriteSize = A2(proportionedSpriteSize,
+                 _v19._0,
+                 _v19._1);
+                 var renderBicillinSprite = function (s) {
+                    return $Graphics$Collage.move({ctor: "_Tuple2"
+                                                  ,_0: s.x
+                                                  ,_1: s.y})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                    spriteSize,
+                    spriteSize,
+                    s.zapped ? "media/BicillinTopUp.png" : s.image)));
+                 };
+                 var $ = {ctor: "_Tuple2"
+                         ,_0: $Basics.toFloat(_v19._0)
+                         ,_1: $Basics.toFloat(_v19._1)},
+                 w = $._0,
+                 h = $._1;
+                 return A3($Graphics$Collage.collage,
+                 _v19._0,
+                 _v19._1,
+                 A2($List.append,
+                 _L.fromArray([$Graphics$Collage.filled(A3($Color.rgb,
+                              174,
+                              238,
+                              238))(A2($Graphics$Collage.rect,
+                              w,
+                              h))
+                              ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                      ,_0: 0
+                                                      ,_1: 24 - h / 2})($Graphics$Collage.filled(A3($Color.rgb,
+                              74,
+                              163,
+                              41))(A2($Graphics$Collage.rect,
+                              w,
+                              50)))
+                              ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                      ,_0: 0
+                                                      ,_1: 0 + 62 - h / 2})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                              58,
+                              86,
+                              "media/Injection.png")))
+                              ,$Graphics$Collage.move({ctor: "_Tuple2"
+                                                      ,_0: 0
+                                                      ,_1: strepMaxY})($Graphics$Collage.toForm(A3($Graphics$Element.image,
+                              spriteSize,
+                              spriteSize,
+                              "media/Heart.png")))]),
+                 A2($List.map,
+                 renderBicillinSprite,
+                 world.targets)));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 78 and 89");
+      }();
+   });
+   var main = A3($Signal.map2,
+   render,
+   $Window.dimensions,
+   A3($Signal.foldp,
+   step,
+   world,
+   input));
+   _elm.StopStrep.values = {_op: _op
+                           ,spriteToSpanRatio: spriteToSpanRatio
+                           ,proportionedSpriteSize: proportionedSpriteSize
+                           ,strepMaxY: strepMaxY
+                           ,BicillinSprite: BicillinSprite
+                           ,World: World
+                           ,world: world
+                           ,scroll: scroll
+                           ,scrollEach: scrollEach
+                           ,zap: zap
+                           ,zapEach: zapEach
+                           ,zap2: zap2
+                           ,close: close
+                           ,step: step
+                           ,addProbability: addProbability
+                           ,yMarginRatio: yMarginRatio
+                           ,possiblyAddBadGuy: possiblyAddBadGuy
+                           ,render: render
+                           ,input: input
+                           ,main: main};
+   return _elm.StopStrep.values;
 };
 Elm.Time = Elm.Time || {};
 Elm.Time.make = function (_elm) {
@@ -6058,6 +6214,43 @@ Elm.Time.make = function (_elm) {
                       ,timestamp: timestamp
                       ,delay: delay};
    return _elm.Time.values;
+};
+Elm.Touch = Elm.Touch || {};
+Elm.Touch.make = function (_elm) {
+   "use strict";
+   _elm.Touch = _elm.Touch || {};
+   if (_elm.Touch.values)
+   return _elm.Touch.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Touch",
+   $Native$Touch = Elm.Native.Touch.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var taps = $Native$Touch.taps;
+   var touches = $Native$Touch.touches;
+   var Touch = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,id: c
+             ,t0: f
+             ,x: a
+             ,x0: d
+             ,y: b
+             ,y0: e};
+   });
+   _elm.Touch.values = {_op: _op
+                       ,Touch: Touch
+                       ,touches: touches
+                       ,taps: taps};
+   return _elm.Touch.values;
 };
 Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {
