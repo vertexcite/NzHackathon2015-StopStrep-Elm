@@ -10,7 +10,6 @@ import List
 import Maybe
 import Random (..)
 
-l !! n = List.head (List.drop n l)
 
 spriteSize = 70
 strepMaxY = 200
