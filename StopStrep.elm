@@ -1,3 +1,5 @@
+module StopStrep where
+
 import Color (..)
 import Graphics.Collage (..)
 import Graphics.Element (..)
@@ -19,8 +21,10 @@ type alias BicillinSprite = { x:Float, y:Float, zapped:Bool, fizzled:Bool, image
 
 type alias World = {seed: Seed, targets:List BicillinSprite}
 
+port portSeed : Int
+
 world : World
-world = {seed = initialSeed 3103, targets = []}
+world = {seed = initialSeed portSeed, targets = []}
 
 
 -- UPDATE -- ("w" is for World)

@@ -1,0 +1,19 @@
+<html>
+ 
+<head>
+<title>StopStrep - Fight the Fever</title>
+<!--<script type="text/javascript" src="elm-runtime.js"></script> -->
+<script type="text/javascript" src="elm.js"></script>
+
+</head>
+ 
+<body>
+<div id="stopStrepGame" style="width:100%; height:100%;"></div>
+</body>
+ 
+<script type="text/javascript">
+var stopStrepGameDiv = document.getElementById('stopStrepGame');
+Elm.embed(Elm.StopStrep, stopStrepGameDiv, { portSeed: Math.floor(Math.random() * Math.pow(2, 32))} );
+</script>
+ 
+</html>
