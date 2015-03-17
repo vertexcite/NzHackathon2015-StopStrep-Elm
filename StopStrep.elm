@@ -13,26 +13,14 @@ import Random (..)
 
 spriteSize = 70
 strepMaxY = 200
-strepStartY0 = 20
-strepStartY1 = 40
-strepStartY2 = 20
-strepStartX0 = -100
-strepStartX1 = 0
-strepStartX2 = 100
-strepStartXs = [strepStartX0, strepStartX1, strepStartX2]
-strepStartYs = [strepStartY0, strepStartY1, strepStartY2]
 -- MODEL
 
 type alias BicillinSprite = { x:Float, y:Float, zapped:Bool, fizzled:Bool, image:String}
 
-strep0 = { x=strepStartX0, y=strepStartY0, zapped= False, fizzled=False, image="media/Strep01.png"}
-strep1 = { x=strepStartX1, y=strepStartY1, zapped= False, fizzled=False, image="media/Strep02.png" }
-strep2 = { x=strepStartX2, y=strepStartY2, zapped= False, fizzled=False, image="media/Strep03.png" }
-
 type alias World = {seed: Seed, targets:List BicillinSprite}
 
 world : World
-world = {seed = initialSeed 3103, targets = [strep0, strep1, strep2]}
+world = {seed = initialSeed 3103, targets = []}
 
 
 -- UPDATE -- ("w" is for World)
