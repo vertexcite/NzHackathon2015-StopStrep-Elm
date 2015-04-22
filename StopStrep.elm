@@ -1,16 +1,16 @@
 module StopStrep where
 
-import Color (..)
-import Graphics.Collage (..)
-import Graphics.Element (..)
+import Color exposing (..)
+import Graphics.Collage exposing (..)
+import Graphics.Element exposing (..)
 import Keyboard
 import Signal
-import Time (..)
+import Time exposing (..)
 import Window
 import Touch
 import List
 import Maybe
-import Random (..)
+import Random exposing (..)
 
 spriteToSpanRatio = 1/10
 proportionedSpriteSize : Int -> Int -> Int
@@ -46,8 +46,10 @@ close spriteSize target actual = 2 * abs (actual - target) < spriteSize
 step : (Float, List Touch.Touch, (Int, Int)) -> World -> World
 step (dt, touches, (width,height)) =
   let
-    touch = if | List.isEmpty touches -> Nothing
-               | otherwise -> Just ((List.head touches).x - round ((toFloat width)/2), round ((toFloat height)/2) - (List.head touches).y  )
+    touch =
+      case List.head touches of
+        Nothing -> Nothing
+        Just t -> Just (t.x - round ((toFloat width)/2), round ((toFloat height)/2) - t.y  )
   in possiblyAddBadGuy dt (width, height) << scroll dt << zap touch (width, height)
 
 
