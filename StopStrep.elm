@@ -31,7 +31,7 @@ world = {seed = initialSeed portSeed, targets = []}
 
 -- UPDATE -- ("w" is for World)
 scroll : Float -> World -> World
-scroll t w = {w | targets = List.filter (\s -> s.fizzled == False) << List.map (scrollEach t) <|  w.targets}
+scroll t w = {w | targets = List.filter (\s -> not s.fizzled) << List.map (scrollEach t) <|  w.targets}
 
 scrollEach : number -> BicillinSprite -> BicillinSprite
 scrollEach t s = if s.y > strepMaxY then { s | fizzled = True } else {s | y = s.y + t}
