@@ -3,7 +3,6 @@ module StopStrep where
 import Color exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
-import Keyboard
 import Signal
 import Time exposing (..)
 import Window
@@ -12,9 +11,11 @@ import List
 import Maybe
 import Random exposing (..)
 
+spriteToSpanRatio : Float
 spriteToSpanRatio = 1/10
 proportionedSpriteSize : Int -> Int -> Int
 proportionedSpriteSize width height = round (spriteToSpanRatio * toFloat (min width height))
+strepMaxY : number
 strepMaxY = 200
 -- MODEL
 
@@ -31,13 +32,19 @@ world = {seed = initialSeed portSeed, targets = []}
 -- UPDATE -- ("w" is for World)
 scroll : Float -> World -> World
 scroll t w = {w | targets = List.filter (\s -> s.fizzled == False) << List.map (scrollEach t) <|  w.targets}
+
+scrollEach : number -> BicillinSprite -> BicillinSprite
 scrollEach t s = if s.y > strepMaxY then { s | fizzled = True } else {s | y = s.y + t}
 
 zap : Maybe (Int, Int) -> (Int, Int) -> World -> World
 zap touch (width, height) w =
   let spriteSize = proportionedSpriteSize width height
   in {w | targets = List.map (zapEach spriteSize touch) w.targets}
+
+zapEach : Int -> Maybe (Int, Int) -> BicillinSprite -> BicillinSprite
 zapEach spriteSize touch s = Maybe.withDefault s ( Maybe.map (zap2 spriteSize s) touch)
+
+zap2 : Int -> BicillinSprite -> (Int, Int) -> BicillinSprite
 zap2 spriteSize s (x,y) = if (close spriteSize (round s.x) x) && (close spriteSize (round s.y) y) then {s | zapped = True} else s
 
 close : Int -> Int -> Int -> Bool
@@ -53,7 +60,9 @@ step (dt, touches, (width,height)) =
   in possiblyAddBadGuy dt (width, height) << scroll dt << zap touch (width, height)
 
 
+addProbability : Float
 addProbability = 0.01
+yMarginRatio : Float
 yMarginRatio = 0.2
 
 possiblyAddBadGuy : Float -> (Int, Int) -> World -> World
@@ -76,6 +85,7 @@ possiblyAddBadGuy dt (width, height) world =
             }
 
 -- DISPLAY
+render : (Int, Int) -> World -> Element
 render (w',h') world =
   let
     (w,h) = (toFloat w', toFloat h')
@@ -92,7 +102,9 @@ render (w',h') world =
 
 
 -- WORLD
+input : Signal (Float, List Touch.Touch, (Int, Int))
 input = let delta = Signal.map (\t -> t/20) (fps 25)
         in  Signal.sampleOn delta (Signal.map3 (,,) delta Touch.touches Window.dimensions)
 
+main : Signal Element
 main = Signal.map2 render Window.dimensions (Signal.foldp step world input)
