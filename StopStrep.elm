@@ -30,15 +30,15 @@ world = {seed = initialSeed portSeed, targets = []}
 
 -- UPDATE -- ("w" is for World)
 scroll : Float -> World -> World
-scroll t w = {w | targets <- List.filter (\s -> s.fizzled == False) << List.map (scrollEach t) <|  w.targets}
-scrollEach t s = if s.y > strepMaxY then { s | fizzled <- True } else {s | y <- s.y + t}
+scroll t w = {w | targets = List.filter (\s -> s.fizzled == False) << List.map (scrollEach t) <|  w.targets}
+scrollEach t s = if s.y > strepMaxY then { s | fizzled = True } else {s | y = s.y + t}
 
 zap : Maybe (Int, Int) -> (Int, Int) -> World -> World
 zap touch (width, height) w =
   let spriteSize = proportionedSpriteSize width height
-  in {w | targets <- List.map (zapEach spriteSize touch) w.targets}
+  in {w | targets = List.map (zapEach spriteSize touch) w.targets}
 zapEach spriteSize touch s = Maybe.withDefault s ( Maybe.map (zap2 spriteSize s) touch)
-zap2 spriteSize s (x,y) = if (close spriteSize (round s.x) x) && (close spriteSize (round s.y) y) then {s | zapped <- True} else s
+zap2 spriteSize s (x,y) = if (close spriteSize (round s.x) x) && (close spriteSize (round s.y) y) then {s | zapped = True} else s
 
 close : Int -> Int -> Int -> Bool
 close spriteSize target actual = 2 * abs (actual - target) < spriteSize
@@ -67,12 +67,12 @@ possiblyAddBadGuy dt (width, height) world =
               xRange = toFloat width / 2
               (position, seed'') = generate (pair (float (-xRange) xRange) (float (-(1 - yMarginRatio) / 2 * toFloat height) 0)) seed'
             in
-                { world | targets <- { x= fst position, y=snd position, zapped= False, fizzled=False, image="media/Strep01.png"} :: world.targets,
-                          seed <- seed''
+                { world | targets = { x= fst position, y=snd position, zapped= False, fizzled=False, image="media/Strep01.png"} :: world.targets,
+                          seed = seed''
                 }
           else
             { world |
-                seed <- seed'
+                seed = seed'
             }
 
 -- DISPLAY

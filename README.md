@@ -9,6 +9,8 @@ This was for the Fight the Fever team which won the NZ Health Hackathon 2015.
 The game concept was a differentiator that helped secure the win.
 This demo was an infinitesimal part of their excellent work.
 
-To compile use: `elm-make StopStrep.elm`
+To compile use: `elm-make StopStrep.elm --output elm.js`
+
+Then open `index.html` (e.g. on a Mac use `open index.html`)
 
 Get Elm from [elm-lang.org](elm-lang.org).
