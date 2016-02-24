@@ -23,12 +23,6 @@ type alias BicillinSprite = { x:Float, y:Float, zapped:Bool, fizzled:Bool, image
 
 type alias World = {seed: Seed, targets:List BicillinSprite}
 
-port portSeed : Int
-
-world : World
-world = {seed = initialSeed portSeed, targets = []}
-
-
 -- UPDATE -- ("w" is for World)
 scroll : Float -> World -> World
 scroll t w = {w | targets = List.filter (\s -> not s.fizzled) << List.map (scrollEach t) <|  w.targets}
@@ -106,5 +100,3 @@ input : Signal (Float, List Touch.Touch, (Int, Int))
 input = let delta = Signal.map (\t -> t/20) (fps 25)
         in  Signal.sampleOn delta (Signal.map3 (,,) delta Touch.touches Window.dimensions)
 
-main : Signal Element
-main = Signal.map2 render Window.dimensions (Signal.foldp step world input)
